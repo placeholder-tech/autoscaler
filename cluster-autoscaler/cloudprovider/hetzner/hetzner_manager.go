@@ -275,6 +275,12 @@ func (m *hetznerManager) serverForNode(node *apiv1.Node) (*hcloud.Server, error)
 		nodeIdOrName = node.Name
 	}
 
+	for key, v := range node.Labels {
+		if key == "instance.hetzner.cloud/is-root-server" && v == "true" {
+			return nil, nil
+		}
+	}
+
 	server, err := m.cachedServers.getServer(nodeIdOrName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get servers for node %s error: %v", node.Name, err)
